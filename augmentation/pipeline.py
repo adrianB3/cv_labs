@@ -32,8 +32,9 @@ class BaseAugmentationHandler(IAugmentationHandler):
 
 
 class Pipeline:
-    def __init__(self):
+    def __init__(self, name):
         self.augmentations = []
+        self.name = name
 
     def add_augmentation(self, augmentation):
         self.augmentations.append(augmentation)

@@ -1,0 +1,13 @@
+pipeline1:
+    - AddText:
+        text: Adrian
+        position: (50, 50)
+    - Rotation:
+        angle: 55
+    - WriteImage:
+
+pipeline2:
+    - AddText:
+        text: Gabriel
+        position: (50, 50)
+    - WriteImage:

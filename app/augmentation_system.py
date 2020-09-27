@@ -1,10 +1,9 @@
 import fnmatch
+import inspect
 import os
-
 import cv2
-
-import augmentation
 import sys
+import yaml
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QSize
@@ -12,10 +11,9 @@ from PyQt5.QtWidgets import QApplication, QLabel, QFileDialog, QMainWindow, QTex
     QProgressBar
 from pathlib import Path
 
-from augmentation.add_name_transform import AddMyName
 from augmentation.data_types import Data
 from augmentation.pipeline import Pipeline
-from augmentation.write_image import WriteImage
+
 from app.utils import scale
 
 
@@ -62,15 +60,16 @@ class AugmentationSystem(QMainWindow):
 
         self.show()
 
+        cfg_file = open('augmentation_cfg.yml')
+        self.cfg = yaml.load(cfg_file, Loader=yaml.FullLoader)
+
         self.input_img_dir = None
-        self.output_img_dir = Path("D:\\dev\\cv_labs_test")
+        self.output_img_dir = Path("D:\\dev\\cv_labs_test")  # TODO - select dir and apply _aug postfix
         self.filter_pattern = "*.jpg"
         self.img_paths = list()
 
-        self.pipeline = Pipeline()
-        self.pipeline\
-            .add_augmentation(AddMyName())\
-            .add_augmentation(WriteImage())
+        self.pipelines = []
+        self.configurePipeline()
 
     def show_dialog(self):
         home_dir = str(Path.home())
@@ -90,22 +89,44 @@ class AugmentationSystem(QMainWindow):
 
     def apply_augmentations(self):
         if len(self.img_paths) != 0:
-            counter = 0
+            counter = 1
             for img_path in self.img_paths:
                 image = cv2.imread(img_path)
                 image_name = os.path.basename(img_path).split(".")[0]
                 new_path = os.path.join(self.output_img_dir, image_name + "_aug.jpg")
                 self.text_out.append("Writing " + str(new_path))
-                scaled_counter = scale(counter, [0, len(self.img_paths) - 1], [0, 100])
+                scaled_counter = scale(counter, [0, len(self.img_paths) * len(self.pipelines) - 1], [0, 100])
                 self.pbar.setValue(int(scaled_counter))
 
-                self.pipeline.execute(Data(image=image, file_path=img_path, output_dir=self.output_img_dir, count=counter, applied_augmentations=[]))
+                for pipeline in self.pipelines:
+                    pipeline.execute(Data(image=image.copy(),
+                                          file_path=img_path,
+                                          output_dir=self.output_img_dir,
+                                          count=counter,
+                                          applied_augmentations=[]
+                                          ))
+                    counter += 1
 
-                counter += 1
                 QApplication.processEvents()
         else:
             pass
         self.apply_aug_button.setChecked(False)
+
+    def configurePipeline(self):
+        self.text_out.append("CONFIGURATION:")
+        self.text_out.append(yaml.dump(self.cfg))
+        for transform_chain_name, transforms in self.cfg.items():
+            pipeline = Pipeline(transform_chain_name)
+            for transform in transforms:
+                for transform_name, props in transform.items():
+                    module = __import__('augmentation.transforms', fromlist=['object'])
+                    for name, obj in inspect.getmembers(module):
+                        if name == transform_name:
+                            if props is not None:
+                                pipeline.add_augmentation(obj(props))
+                            else:
+                                pipeline.add_augmentation(obj())
+            self.pipelines.append(pipeline)
 
 
 def main():
