@@ -55,6 +55,7 @@ class AugmentationSystem(QMainWindow):
         self.text_out = QTextEdit(self)
         self.text_out.setReadOnly(True)
         self.text_out.append("Hello to Augmentation System!")
+        self.text_out.append("\n")
         self.text_out.setAlignment(Qt.AlignLeft)
         self.setCentralWidget(self.text_out)
 
@@ -64,12 +65,12 @@ class AugmentationSystem(QMainWindow):
         self.cfg = yaml.load(cfg_file, Loader=yaml.FullLoader)
 
         self.input_img_dir = None
-        self.output_img_dir = Path("D:\\dev\\cv_labs_test")  # TODO - select dir and apply _aug postfix
+        self.output_img_dir = None
         self.filter_pattern = "*.jpg"
         self.img_paths = list()
 
         self.pipelines = []
-        self.configurePipeline()
+        self.configure_pipeline()
 
     def show_dialog(self):
         home_dir = str(Path.home())
@@ -77,9 +78,16 @@ class AugmentationSystem(QMainWindow):
         if os.path.exists(dir_path):
             self.input_img_dir = dir_path
             self.get_valid_images()
-            self.text_out.append("Found " + str(len(self.img_paths)) + " images.")
+            self.text_out.append("\n")
+            self.text_out.append("Found " + str(len(self.img_paths)) + " images in " + str(self.input_img_dir) + ".")
+            self.output_img_dir = os.path.join(dir_path.parent, os.path.basename(dir_path) + "_aug")
+            if not os.path.exists(self.output_img_dir):
+                os.mkdir(self.output_img_dir)
+            elif os.listdir(self.output_img_dir):
+                self.text_out.append("Output dir: " + self.output_img_dir + " is not empty.")
         else:
             raise FileNotFoundError(dir_path + "doesn't exist.")
+        self.text_out.append("\n")
         self.open_folder_button.setChecked(False)
 
     def get_valid_images(self):
@@ -92,12 +100,10 @@ class AugmentationSystem(QMainWindow):
             counter = 1
             for img_path in self.img_paths:
                 image = cv2.imread(img_path)
-                image_name = os.path.basename(img_path).split(".")[0]
-                new_path = os.path.join(self.output_img_dir, image_name + "_aug.jpg")
-                self.text_out.append("Writing " + str(new_path))
+                image_name = os.path.basename(img_path)
+                self.text_out.append("Processing  " + image_name)
                 scaled_counter = scale(counter, [0, len(self.img_paths) * len(self.pipelines) - 1], [0, 100])
                 self.pbar.setValue(int(scaled_counter))
-
                 for pipeline in self.pipelines:
                     pipeline.execute(Data(image=image.copy(),
                                           file_path=img_path,
@@ -110,9 +116,10 @@ class AugmentationSystem(QMainWindow):
                 QApplication.processEvents()
         else:
             pass
+        self.text_out.append("\n")
         self.apply_aug_button.setChecked(False)
 
-    def configurePipeline(self):
+    def configure_pipeline(self):
         self.text_out.append("CONFIGURATION:")
         self.text_out.append(yaml.dump(self.cfg))
         for transform_chain_name, transforms in self.cfg.items():
@@ -132,7 +139,7 @@ class AugmentationSystem(QMainWindow):
 def main():
     app = QApplication(sys.argv)
     aug_sys = AugmentationSystem()
-    sys.exit(app.exec_())
+    app.exec()
 
 
 if __name__ == "__main__":
