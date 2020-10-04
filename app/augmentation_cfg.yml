@@ -4,6 +4,12 @@ pipeline1:
         position: (50, 50)
     - Rotation:
         angle: 55
+    - Bias:
+        b: 10
+    - Gain:
+        a: 0.5
+    - GammaCorrection:
+        gamma: 2
     - WriteImage:
 
 pipeline2:

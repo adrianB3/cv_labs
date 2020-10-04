@@ -5,6 +5,7 @@ import numpy as np
 
 from augmentation.data_types import Augmentation, Data
 from ast import literal_eval as make_tuple
+from augmentation.point_proc import *
 
 
 class WriteImage(Augmentation):
