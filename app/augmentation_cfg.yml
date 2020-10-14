@@ -3,7 +3,13 @@ pipeline1:
         text: Adrian
         position: (50, 50)
     - Rotation:
-        angle: 15
+        angle: 55
+    - Bias:
+        b: 10
+    - Gain:
+        a: 0.5
+    - GammaCorrection:
+        gamma: 2
     - WriteImage:
 
 pipeline2:
