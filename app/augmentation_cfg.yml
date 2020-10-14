@@ -3,7 +3,7 @@ pipeline1:
         text: Adrian
         position: (50, 50)
     - Rotation:
-        angle: 55
+        angle: 15
     - WriteImage:
 
 pipeline2:

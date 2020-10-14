@@ -50,3 +50,16 @@ class Rotation(Augmentation):
         M[1, 2] += (nh / 2) - cy
 
         data.data['image'] = cv2.warpAffine(data.data['image'], M, (nw, nh))
+
+
+class Tint(Augmentation):
+    def __init__(self, params):
+        self.params = params
+        self.color = make_tuple(self.params['color'])
+        self.factor = self.params['factor']
+
+    def process(self, data: Data):
+        (h, w, c) = data.data['image'].shape[:3]
+        tint_img = np.full((h, w, c), self.color, np.uint8)
+        tint_weight = self.factor / 100.0
+        cv2.addWeighted(data.data['image'], 1 - tint_weight, tint_img, tint_weight, 0)
