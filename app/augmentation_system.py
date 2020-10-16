@@ -26,7 +26,7 @@ class AugmentationSystem(QMainWindow):
         toolbar.setIconSize(QSize(24, 24))
         self.addToolBar(toolbar)
 
-        self.open_folder_button = QAction(QIcon("assets/open_folder.png"), "Opsen Folder", self)
+        self.open_folder_button = QAction(QIcon("assets/open_folder.png"), "Open Folder", self)
         self.open_folder_button.setStatusTip("Open image folder")
         self.open_folder_button.triggered.connect(self.show_dialog)
         self.open_folder_button.setCheckable(True)
@@ -34,7 +34,7 @@ class AugmentationSystem(QMainWindow):
 
         toolbar.addSeparator()
 
-        self.apply_aug_button = QAction(QIcon("assets/apply_aug.png"), "Apply", self)
+        self.apply_aug_button = QAction(QIcon("assets/apply_aug.png"), "Apply augmentations", self)
         self.apply_aug_button.setStatusTip("Apply defined augmentations")
         self.apply_aug_button.triggered.connect(self.apply_augmentations)
         self.apply_aug_button.setCheckable(True)
@@ -73,7 +73,7 @@ class AugmentationSystem(QMainWindow):
         self.configure_pipeline()
 
     def show_dialog(self):
-        home_dir = str(Path.home())
+        home_dir = str(os.path.join(Path.home(), "Desktop"))
         dir_path = Path(QFileDialog.getExistingDirectory(self, 'Open folder', home_dir))
         if os.path.exists(dir_path):
             self.input_img_dir = dir_path

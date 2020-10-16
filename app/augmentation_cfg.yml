@@ -1,19 +1,28 @@
 pipeline1:
     - AddText:
-        text: Adrian
+        text: Pipeline1
         position: (50, 50)
     - Rotation:
-        angle: 55
+        angle: 15
     - Bias:
-        b: 10
+        b: 20
     - Gain:
         a: 0.5
     - GammaCorrection:
-        gamma: 2
+        gamma: 1
     - WriteImage:
 
 pipeline2:
     - AddText:
-        text: Gabriel
+        text: Pipeline2
         position: (50, 50)
+    - Blur:
+        type: gaussian # box, gaussian, median, bilateral
+        kernel_size: (50, 50)
+        # additional params
+    - Noise:
+    - HistEq:
+    - Tint:
+        weight: 0.3
+        color: (100, 0, 0) #BGR
     - WriteImage:
