@@ -5,6 +5,7 @@ import cv2
 from ast import literal_eval as make_tuple
 from augmentation.point_proc import *
 from augmentation.geometric import *
+from augmentation.filtering import *
 
 
 class WriteImage(Augmentation):

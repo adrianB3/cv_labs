@@ -23,7 +23,8 @@ class Gain(Augmentation):
     def process(self, data: Data):
         img = data.data['image'].copy()
         img = img.astype('float32')
-        img *= self.params['a']
+        if self.params['a'] != 0:
+            img *= self.params['a']
 
         data.data['image'] = img.astype('uint8')
 
@@ -37,8 +38,10 @@ class GammaCorrection(Augmentation):
 
         inv_gamma = 1.0 / self.params['gamma']
         table = np.array([((i / 255.0) ** inv_gamma) * 255 for i in np.arange(0, 256)])
+        corrected_image = cv2.LUT(img.astype(np.uint8), table.astype(np.uint8))
+        # corrected_image = np.power(img, self.params['gamma'])
 
-        data.data['image'] = cv2.LUT(img.astype(np.uint8), table.astype(np.uint8))
+        data.data['image'] = corrected_image
 
 
 class Noise(Augmentation):
