@@ -1,19 +1,28 @@
 pipeline1:
-    - Rotation:
-        angle: 15
-    - Bias:
-        b: 0
-    - Gain:
-        a: 0
-    - GammaCorrection:
-        gamma: 0.5
+#    - Rotation:
+#        angle: -15
+#    - Bias:
+#        b: 0
+#    - Gain:
+#        a: 0
+#    - GammaCorrection:
+#        gamma: 0.5
+#    - Translation:
+#        t_x: 15
+#        t_y: 20
+#    - Scaling:
+#        s_x: 10
+#        s_y: 10
+#    - Shear:
+#        sh_x: 20
+#        sh_y: 20
     - AddText:
         text: Pipeline1
         position: (50, 50)
     - WriteImage:
 
-pipeline2:
-    - Sharpen:
+#pipeline2:
+#    - Sharpen:
 #    - Blur:
 #        type: gaussian # box, gaussian, median, bilateral
 #        kernel_size: (15, 15)
@@ -23,7 +32,7 @@ pipeline2:
 #    - Tint:
 #        weight: 0.3
 #        color: (100, 0, 0) #BGR
-    - AddText:
-        text: Pipeline2
-        position: (50, 50)
-    - WriteImage:
+#    - AddText:
+#        text: Pipeline2
+#        position: (50, 50)
+#    - WriteImage:
