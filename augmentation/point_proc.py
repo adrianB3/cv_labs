@@ -86,3 +86,38 @@ class Tint(Augmentation):
         tint_img = np.full((h, w, c), self.color, np.uint8)
         new_img = cv2.addWeighted(data.data['image'], 1 - self.weight, tint_img, self.weight, 0)
         data.data['image'] = new_img
+
+
+class RandomErasing(Augmentation):
+    def __init__(self, params):
+        self.params = params
+
+    def process(self, data: Data):
+        input_img = data.data['image']
+        if input_img.ndim == 3:
+            h, w, c = input_img.shape
+        elif input_img.ndim == 2:
+            h, w = input_img.shape
+
+        prob = np.random.rand()  # returns a random nb between 0 and 1
+        if self.params['probability'] < prob:
+            pass
+        else:
+            while True:
+                s = np.random.uniform(self.params['min_prop'], self.params['max_prop']) * h * w
+                r = np.random.uniform(self.params['min_ratio'], self.params['max_ratio'])
+                w1 = int(np.sqrt(s / r))
+                h1 = int(np.sqrt(s * r))
+                left = np.random.randint(0, w)
+                top = np.random.randint(0, h)
+
+                if left + w1 <= w and top + h1 <= h:
+                    break
+
+            if input_img.ndim == 3:
+                col = np.random.uniform(0, 255, (h1, w1, c))
+            if input_img.ndim == 2:
+                col = np.random.uniform(0, 255, (h1, w1))
+
+            input_img[top:top + h1, left:left + w1] = col
+            data.data['image'] = input_img

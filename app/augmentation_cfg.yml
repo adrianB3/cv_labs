@@ -16,6 +16,12 @@ pipeline1:
 #    - Shear:
 #        sh_x: 20
 #        sh_y: 20
+    - RandomErasing:
+          probability: 0.5 # prob that random erasing is performed
+          min_prop: 0.02 # min max proportion of erased area against input image dims
+          max_prop: 0.4
+          min_ratio: 0.3 # min max aspect ratio for erased area
+          max_ratio: 0.4
     - AddText:
         text: Pipeline1
         position: (50, 50)
