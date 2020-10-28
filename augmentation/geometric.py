@@ -9,7 +9,7 @@ class Translation(Augmentation):
         self.params = params
 
     def process(self, data: Data):
-        (h, w) = data.data['image'].shape[:2]
+        h, w, c = data.data['image'].shape
 
         T = np.float32([[1, 0, self.params['t_y']], [0, 1, self.params['t_x']]])
 
@@ -21,11 +21,21 @@ class Scaling(Augmentation):
         self.params = params
 
     def process(self, data: Data):
-        (h, w) = data.data['image'].shape[:2]
+        img = data.data['image']
+        h, w, c = img.shape
 
-        S = np.float32([[self.params['s_x'], 0, 0], [0, self.params['s_y'], 0]])
+        prob = np.random.rand()
+        if self.params['probability'] < prob:
+            pass
+        else:
+            scale_x = np.random.uniform(self.params['scale_factor_x'])
+            scale_y = np.random.uniform(self.params['scale_factor_y'])
+            resize_scale_x = 1 + scale_x
+            resize_scale_y = 1 + scale_y
 
-        data.data['image'] = cv2.warpAffine(data.data['image'], S, (w, h))
+            img = cv2.resize(img, None, fx=resize_scale_x, fy=resize_scale_y)
+
+            data.data['image'] = img
 
 
 class Shear(Augmentation):
@@ -33,11 +43,20 @@ class Shear(Augmentation):
         self.params = params
 
     def process(self, data: Data):
-        (h, w) = data.data['image'].shape[:2]
+        img = data.data['image']
+        h, w, c = img.shape
 
-        SH = np.float32([[1, self.params['sh_x'], 0], [self.params['sh_y'], 1, 0]])
+        prob = np.random.rand()
+        if self.params['probability'] < prob:
+            pass
+        else:
+            rand_shear_factor = np.random.uniform(self.params['shear_factor'])
+            SH = np.float32([[1, abs(rand_shear_factor), 0], [0, 1, 0]])
+            nW = int(img.shape[1] + abs(rand_shear_factor * img.shape[0]))
+            img = cv2.warpAffine(img, SH, (nW, h)).astype('uint8')
+            img = cv2.resize(img, (w, h))
 
-        data.data['image'] = cv2.warpAffine(data.data['image'], SH, (w, h))
+            data.data['image'] = img
 
 
 class Rotation(Augmentation):
@@ -45,7 +64,7 @@ class Rotation(Augmentation):
         self.params = params
 
     def process(self, data: Data):
-        (h, w) = data.data['image'].shape[:2]
+        (h, w, c) = data.data['image'].shape
         (cx, cy) = (w // 2, h // 2)
 
         M = cv2.getRotationMatrix2D((cx, cy), -self.params['angle'], 1.0)
@@ -66,8 +85,16 @@ class Flip(Augmentation):
         self.params = params
 
     def process(self, data: Data):
-        if self.params['axis'] == 'horizontal':
-            data.data['image'] = np.flipud(data.data['image'])
 
-        if self.params['axis'] == 'vertical':
-            data.data['image'] = np.fliplr(data.data['image'])
+        prob = np.random.rand()
+        if self.params['probability'] < prob:
+            pass
+        else:
+            if self.params['axis'] == 'horizontal':
+                data.data['image'] = cv2.flip(data.data['image'], 1)
+
+            if self.params['axis'] == 'vertical':
+                data.data['image'] = cv2.flip(data.data['image'], 0)
+
+            if self.params['axis'] == 'both':
+                data.data['image'] = cv2.flip(data.data['image'], -1)

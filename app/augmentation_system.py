@@ -61,8 +61,8 @@ class AugmentationSystem(QMainWindow):
 
         self.show()
 
-        cfg_file = open('augmentation_cfg.yml')
-        self.cfg = yaml.load(cfg_file, Loader=yaml.FullLoader)
+        self.cfg_file = open('augmentation_cfg.yml')
+        self.cfg = yaml.load(self.cfg_file, Loader=yaml.FullLoader)
 
         self.input_img_dir = None
         self.output_img_dir = None
@@ -96,6 +96,10 @@ class AugmentationSystem(QMainWindow):
                 self.img_paths.append(os.path.join(self.input_img_dir, entry))
 
     def apply_augmentations(self):
+        self.cfg_file = open('augmentation_cfg.yml')
+        self.cfg = yaml.load(self.cfg_file, Loader=yaml.FullLoader)
+        self.pipelines = []
+        self.configure_pipeline()
         if len(self.img_paths) != 0:
             counter = 1
             for img_path in self.img_paths:

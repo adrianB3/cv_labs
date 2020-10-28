@@ -1,4 +1,7 @@
 pipeline1:
+    - Flip:
+        probability: 1
+        axis: both
 #    - Rotation:
 #        angle: -15
 #    - Luminosity:
@@ -10,18 +13,19 @@ pipeline1:
 #    - Translation:
 #        t_x: 15
 #        t_y: 20
-#    - Scaling:
-#        s_x: 10
-#        s_y: 10
+#    - Scale:
+#        probability: 1
+#        scale_factor_x: 0.2
+#        scale_factor_y: 0.3
 #    - Shear:
-#        sh_x: 20
-#        sh_y: 20
-    - RandomErasing:
-          probability: 0.5 # prob that random erasing is performed
-          min_prop: 0.02 # min max proportion of erased area against input image dims
-          max_prop: 0.4
-          min_ratio: 0.3 # min max aspect ratio for erased area
-          max_ratio: 0.4
+#        probability: 1
+#        shear_factor: 0.2
+#    - RandomErasing:
+#          probability: 0.5 # prob that random erasing is performed
+#          min_prop: 0.02 # min max proportion of erased area against input image dims
+#          max_prop: 0.4
+#          min_ratio: 0.3 # min max aspect ratio for erased area
+#          max_ratio: 0.4
     - AddText:
         text: Pipeline1
         position: (50, 50)
