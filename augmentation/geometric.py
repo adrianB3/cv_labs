@@ -59,3 +59,15 @@ class Rotation(Augmentation):
         M[1, 2] += (nh / 2) - cy
 
         data.data['image'] = cv2.warpAffine(data.data['image'], M, (nw, nh))
+
+
+class Flip(Augmentation):
+    def __init__(self, params):
+        self.params = params
+
+    def process(self, data: Data):
+        if self.params['axis'] == 'horizontal':
+            data.data['image'] = np.flipud(data.data['image'])
+
+        if self.params['axis'] == 'vertical':
+            data.data['image'] = np.fliplr(data.data['image'])
