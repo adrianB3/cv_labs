@@ -1,10 +1,10 @@
 pipeline1:
 #    - Rotation:
 #        angle: -15
-#    - Bias:
-#        b: 0
-#    - Gain:
-#        a: 0
+#    - Luminosity:
+#        bias: 0
+#    - Contrast:
+#        gain: 0
 #    - GammaCorrection:
 #        gamma: 0.5
 #    - Translation:
