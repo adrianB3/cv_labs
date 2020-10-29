@@ -13,11 +13,11 @@ class Blur(Augmentation):
         kernel_size = make_tuple(self.params['kernel_size'])
         img = data.data['image']
         if self.params['type'] == 'box':
-            cv2.boxFilter(src=img, dst=img, ddepth=0, ksize=kernel_size)
+            img = cv2.boxFilter(src=img, ddepth=0, ksize=kernel_size)
         if self.params['type'] == 'gaussian':
-            cv2.GaussianBlur(src=img, dst=img, ksize=kernel_size, sigmaX=0)
+            img = cv2.GaussianBlur(src=img, ksize=kernel_size, sigmaX=0)
         if self.params['type'] == 'median':
-            cv2.medianBlur(src=img, dst=img, ksize=kernel_size)
+            img = cv2.medianBlur(src=img, ksize=kernel_size[0])
         data.data['image'] = img
 
 

@@ -21,10 +21,10 @@ pipeline1:
 #        probability: 1
 #        t_x_range: (-20, 10)
 #        t_y_range: (-30, 25)
-    - BilateralFilter:
-        d: 9
-        sigma_color: 75
-        sigma_space: 75
+#    - BilateralFilter:
+#        d: 9
+#        sigma_color: 75
+#        sigma_space: 75
 #    - Scale:
 #        probability: 1
 #        scale_factor_x_range: (0.2, 0.3)
@@ -43,6 +43,9 @@ pipeline1:
 #        weight: 0.8
 #        color: (100, 0, 0) #BGR
 #        random_color: True
+#    - Blur:
+#        type: gaussian # box, gaussian, median,
+#        kernel_size: (15, 15)
     - AddText:
         text: Pipeline1
         position: (50, 50)
@@ -50,10 +53,6 @@ pipeline1:
 
 #pipeline2:
 #    - Sharpen:
-#    - Blur:
-#        type: gaussian # box, gaussian, median,
-#        kernel_size: (15, 15)
-        # additional params
 #    - Noise:
 #    - HistEq:
 #    - AddText:
