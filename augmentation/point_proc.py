@@ -5,18 +5,7 @@ import numpy as np
 import cv2
 
 
-class Luminosity(Augmentation):
-    def __init__(self, params):
-        self.params = params
-
-    def process(self, data: Data):
-        img = data.data['image'].copy()
-        img = img.astype('float32')
-        img += self.params['bias']
-        data.data['image'] = img.astype('uint8')
-
-
-class Contrast(Augmentation):
+class LuminosityContrast(Augmentation):
     def __init__(self, params):
         self.params = params
 
@@ -24,8 +13,7 @@ class Contrast(Augmentation):
         img = data.data['image'].copy()
         img = img.astype('float32')
         if self.params['gain'] != 0:
-            img *= self.params['gain']
-
+            img = (img * self.params['gain'] + self.params['bias']).clip(0.0, 255.0)
         data.data['image'] = img.astype('uint8')
 
 
@@ -65,24 +53,19 @@ class Noise(Augmentation):
         if self.params['type'] == "sp":
             svsp = 0.5
             amount = self.params['sp']['amount']
+
             # Salt mode
             num_salt = np.ceil(amount * img.size * svsp)
             coords = [np.random.randint(0, i - 1, int(num_salt))
                       for i in img.shape]
-            img[coords] = 1
+            img[tuple(coords)] = 1
 
             # Pepper mode
             num_pepper = np.ceil(amount * img.size * (1. - svsp))
             coords = [np.random.randint(0, i - 1, int(num_pepper))
                       for i in img.shape]
-            img[coords] = 0
+            img[tuple(coords)] = 0
             data.data['image'] = img
-
-        if self.params['type'] == "poisson":
-            vals = len(np.unique(img))
-            vals = 2 ** np.ceil(np.log2(vals))
-            noisy = np.random.poisson(img * vals) / float(vals)
-            data.data['image'] = noisy
 
         if self.params['type'] == "speckle":
             gauss = np.random.randn(h, w, c)
@@ -95,7 +78,8 @@ class HistEq(Augmentation):
 
     def process(self, data: Data):
         img = data.data['image']
-        if img.shape[2] == 1:
+        h, w, c = img.shape
+        if c == 1:
             img = cv2.equalizeHist(img)
         else:
             img[:, :, 0] = cv2.equalizeHist(img[:, :, 0])
@@ -112,10 +96,16 @@ class Tint(Augmentation):
         self.weight = self.params['weight']
 
     def process(self, data: Data):
-        (h, w, c) = data.data['image'].shape[:3]
-        tint_img = np.full((h, w, c), self.color, np.uint8)
-        new_img = cv2.addWeighted(data.data['image'], 1 - self.weight, tint_img, self.weight, 0)
-        data.data['image'] = new_img
+        (h, w, c) = data.data['image'].shape
+        prob = np.random.rand()  # returns a random nb between 0 and 1
+        if self.params['probability'] < prob:
+            pass
+        else:
+            if self.params['random_color']:
+                self.color = (np.random.randint(0, 255), np.random.randint(0, 255), np.random.randint(0, 255))
+            tint_img = np.full((h, w, c), self.color, np.uint8)
+            new_img = cv2.addWeighted(data.data['image'], 1 - self.weight, tint_img, self.weight, 0)
+            data.data['image'] = new_img
 
 
 class RandomErasing(Augmentation):

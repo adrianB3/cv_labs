@@ -1,31 +1,48 @@
 pipeline1:
-    - Flip:
-        probability: 1
-        axis: both
+#    - Flip:
+#        probability: 1
+#        axis: both
 #    - Rotation:
-#        angle: -15
-#    - Luminosity:
-#        bias: 0
-#    - Contrast:
-#        gain: 0
+#        probability: 1
+#        angle_range: (-15, 20)
+#    - LuminosityContrast:
+#        bias: 10
+#        gain: 2
 #    - GammaCorrection:
 #        gamma: 0.5
+#    - Noise:
+#        type: sp # gaussian, sp, speckle
+#        gaussian:
+#           mean: 20
+#           var: 10
+#        sp:
+#           amount: 0.1
 #    - Translation:
-#        t_x: 15
-#        t_y: 20
+#        probability: 1
+#        t_x_range: (-20, 10)
+#        t_y_range: (-30, 25)
+    - BilateralFilter:
+        d: 9
+        sigma_color: 75
+        sigma_space: 75
 #    - Scale:
 #        probability: 1
-#        scale_factor_x: 0.2
-#        scale_factor_y: 0.3
+#        scale_factor_x_range: (0.2, 0.3)
+#        scale_factor_y_range: (0.3, 0.4)
 #    - Shear:
 #        probability: 1
-#        shear_factor: 0.2
+#        shear_factor_range: (0.2, 0.3)
 #    - RandomErasing:
 #          probability: 0.5 # prob that random erasing is performed
 #          min_prop: 0.02 # min max proportion of erased area against input image dims
 #          max_prop: 0.4
 #          min_ratio: 0.3 # min max aspect ratio for erased area
 #          max_ratio: 0.4
+#    - Tint:
+#        probability: 1
+#        weight: 0.8
+#        color: (100, 0, 0) #BGR
+#        random_color: True
     - AddText:
         text: Pipeline1
         position: (50, 50)
@@ -34,14 +51,11 @@ pipeline1:
 #pipeline2:
 #    - Sharpen:
 #    - Blur:
-#        type: gaussian # box, gaussian, median, bilateral
+#        type: gaussian # box, gaussian, median,
 #        kernel_size: (15, 15)
         # additional params
 #    - Noise:
 #    - HistEq:
-#    - Tint:
-#        weight: 0.3
-#        color: (100, 0, 0) #BGR
 #    - AddText:
 #        text: Pipeline2
 #        position: (50, 50)
