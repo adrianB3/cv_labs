@@ -66,7 +66,7 @@ class AugmentationSystem(QMainWindow):
 
         self.input_img_dir = None
         self.output_img_dir = None
-        self.filter_pattern = "*.jpg"
+        self.filter_pattern = r'@(*.png|*.jpg)'
         self.img_paths = list()
 
         self.pipelines = []
