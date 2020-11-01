@@ -1,0 +1,4 @@
+use_camera: True
+video_path: /home/adrianb3/google_drive/videos/dutch_traffic.mp4
+
+buffer_size: 1
