@@ -4,7 +4,7 @@ import yaml
 
 from collections import deque
 
-from blank_seq_removal.blank_seq_remove import BlankSeqDetector
+from blank_seq_removal.blank_seq_remove import BlankSeqDetector, BlankSeqDetectorOF
 
 cfg_path = open('cfg.yml')
 cfg = yaml.load(cfg_path, Loader=yaml.FullLoader)
@@ -22,7 +22,7 @@ def main_loop():
         else:
             raise FileNotFoundError("Video file doesn't exist.")
 
-    bsd = BlankSeqDetector()
+    bsd = BlankSeqDetectorOF()
     buffer = deque(maxlen=cfg['buffer_size'])
     is_static = False
 

@@ -1,4 +1,4 @@
-use_camera: True
-video_path: \home\google_drive\videos\dutchTraffic.mp4
+use_camera: False
+video_path: /home/adrianb3/google_drive/videos/dutch_traffic.mp4
 write_video: False
-buffer_size: 1
+buffer_size: 2
