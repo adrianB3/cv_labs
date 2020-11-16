@@ -1,5 +1,5 @@
 use_camera: False
-video_path: /home/adrianb3/google_drive/videos/dutch_traffic.mp4
+video_path: D:\\GDrive\\videos\\dutch_traffic2.mp4
 write_video: False
 
 buffer_size: 1
