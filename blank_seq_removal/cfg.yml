@@ -1,6 +1,6 @@
-use_camera: False
+use_camera: True
 
-video_path: D:\\GDrive\\videos\\dutch_traffic2.mp4
+video_path: D:\\GDrive\\videos\\dutch_traffic.mp4
 
 write_video: False
 
