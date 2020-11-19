@@ -22,7 +22,7 @@ def main_loop():
         else:
             raise FileNotFoundError("Video file doesn't exist.")
 
-    bsd = BlankSeqDetectorOF()
+    bsd = BlankSeqDetector()
     buffer = deque(maxlen=cfg['buffer_size'])
     is_static = False
 
