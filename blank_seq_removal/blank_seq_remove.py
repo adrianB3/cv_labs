@@ -6,19 +6,20 @@ class BlankSeqDetector:
     def __init__(self):
         self.backSub = cv2.createBackgroundSubtractorMOG2(4, 30, detectShadows=False)
         self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-        self.thresh = 1.1
+        self.thresh = 0.14
 
     def process(self, frame_buffer):
         blured = cv2.blur(src=frame_buffer[0], ksize=(15, 15))
         cv2.imshow("Blurred", blured)
         mask = self.backSub.apply(blured)
         fgmask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.kernel)
-        cv2.imshow("Foreground Mask", fgmask)
         wh_count = cv2.countNonZero(fgmask)
         prc_mask = (wh_count / (frame_buffer[0].shape[0] * frame_buffer[0].shape[1])) * 100
         print(prc_mask)
         # contours, hierarchy = cv2.findContours(fgmask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         # cv2.drawContours(frame_buffer[0], contours, -1, (0, 255, 0), 3)
+        mask_with_img = cv2.bitwise_and(frame_buffer[0], frame_buffer[0], mask=fgmask)
+        cv2.imshow("Foreground Mask", mask_with_img)
         return prc_mask < self.thresh
 
 
