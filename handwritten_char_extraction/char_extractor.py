@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+"https://stackoverflow.com/questions/36407608/recognize-the-characters-of-license-plate"
 
 class CharExtractor:
     def __init__(self):
@@ -51,7 +51,7 @@ class CharExtractor:
         return rotated
 
     def extract_lines2(self, img):
-        rect_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (30, 3))
-        dilation = cv2.dilate(img, rect_kernel, iterations=1)
+        rect_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (15, 5))
+        dilation = cv2.dilate(img, rect_kernel, iterations=2)
         contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         return contours
