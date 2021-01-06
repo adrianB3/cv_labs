@@ -15,7 +15,7 @@ if __name__ == "__main__":
     cv2.namedWindow("Img", cv2.WINDOW_GUI_EXPANDED | cv2.WINDOW_FREERATIO)
     img_path = Path(cfg['test_img'])
     img_path = os.path.join(os.getcwd(), img_path)
-    img = cv2.imread(img_path)
+    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
     out = ce.process(img)
 
