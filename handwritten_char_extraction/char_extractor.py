@@ -14,16 +14,16 @@ class CharExtractor:
         count = 0
         for line in lines:
             rect = cv2.minAreaRect(line)
-            width = int(rect[1][0])
-            height = int(rect[1][1])
             box = cv2.boxPoints(rect)
             box = np.int0(box)
-            cv2.drawContours(img, [box], 0, (0, 0, 0), 2)
-            letters, warped = self.extract_letters(clean, box, width, height)
-            for limit in letters:
-                cv2.line(warped, (limit, 0), (limit, warped.shape[1]), (0, 255, 0), 1)
-            cv2.imshow("letters" + str(count), warped)
-            count += 1
+            cropped = self.crop_minAreaRect(clean, rect, box)
+            if cropped.size != 0:
+                letters, warped = self.extract_letters(cropped)
+                cv2.drawContours(img, [box], 0, (0, 0, 0), 2)
+                for limit in letters:
+                    cv2.line(warped, (limit, 0), (limit, warped.shape[1]), (0, 255, 0), 1)
+                cv2.imshow("letters" + str(count), warped)
+                count += 1
 
         return img
 
@@ -51,27 +51,13 @@ class CharExtractor:
         contours, hierarchy = cv2.findContours(clean, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         return contours
 
-    def extract_letters(self, img, box, width, height):
+    def extract_letters(self, crop):
 
-        src_pts = box.astype("float32")
-        # coordinate of the points in box points after the rectangle has been
-        # straightened
-        dst_pts = np.array([[0, height - 1],
-                            [0, 0],
-                            [width - 1, 0],
-                            [width - 1, height - 1]], dtype="float32")
-
-        # the perspective transformation matrix
-        M = cv2.getPerspectiveTransform(src_pts, dst_pts)
-
-        # directly warp the rotated rectangle to get the straightened rectangle
-        warped = cv2.warpPerspective(img, M, (width, height))
-
-        thinned = cv2.ximgproc.thinning(warped)
+        thinned = cv2.ximgproc.thinning(crop)
 
         x_sum = cv2.reduce(thinned, 0, cv2.REDUCE_SUM, dtype=cv2.CV_32S)
 
-        warped = cv2.cvtColor(warped, cv2.COLOR_GRAY2BGR)
+        warped = cv2.cvtColor(crop, cv2.COLOR_GRAY2BGR)
         limits = []
         consecutive_line_letters = []
         for i in range(0, len(x_sum[0])):
@@ -79,11 +65,42 @@ class CharExtractor:
                 limits.append(i)
                 if len(consecutive_line_letters) != 0:
                     letter = warped[0:warped.shape[0], consecutive_line_letters[0]:consecutive_line_letters[-1]]
-                    if len(letter) != 0:
-                        cv2.imwrite(os.path.join(os.getcwd(), "characters", "img" + str(i) + ".png"), letter)
+                    # if len(letter) != 0:
+                        # cv2.imwrite(os.path.join(os.getcwd(), "characters", "img" + str(i) + ".png"), letter)
                     consecutive_line_letters.clear()
             else:
                 consecutive_line_letters.append(i)
             # if x_sum[0][i] == 255:
             #     cv2.line(warped, (i, 0), (i, warped.shape[1]), (0, 255, 0), 1)
         return limits, warped
+
+    def crop_minAreaRect(self, img, rect, box):
+
+        W = rect[1][0]
+        H = rect[1][1]
+
+        Xs = [i[0] for i in box]
+        Ys = [i[1] for i in box]
+        x1 = min(Xs)
+        x2 = max(Xs)
+        y1 = min(Ys)
+        y2 = max(Ys)
+
+        angle = rect[2]
+        if angle < -45:
+            angle += 90
+
+        # Center of rectangle in source image
+        center = ((x1 + x2) / 2, (y1 + y2) / 2)
+        # Size of the upright rectangle bounding the rotated rectangle
+        size = (x2 - x1, y2 - y1)
+        M = cv2.getRotationMatrix2D((size[0] / 2, size[1] / 2), angle, 1.0)
+        # Cropped upright rectangle
+        cropped = cv2.getRectSubPix(img, size, center)
+        cropped = cv2.warpAffine(cropped, M, size)
+        croppedW = H if H > W else W
+        croppedH = H if H < W else W
+        # Final cropped & rotated rectangle
+        croppedRotated = cv2.getRectSubPix(cropped, (int(croppedW), int(croppedH)), (size[0] / 2, size[1] / 2))
+
+        return croppedRotated
