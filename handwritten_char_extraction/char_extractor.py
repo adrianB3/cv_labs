@@ -65,8 +65,8 @@ class CharExtractor:
                 limits.append(i)
                 if len(consecutive_line_letters) != 0:
                     letter = warped[0:warped.shape[0], consecutive_line_letters[0]:consecutive_line_letters[-1]]
-                    # if len(letter) != 0:
-                        # cv2.imwrite(os.path.join(os.getcwd(), "characters", "img" + str(i) + ".png"), letter)
+                    if len(letter) != 0:
+                        cv2.imwrite(os.path.join(os.getcwd(), "characters", "img" + str(i) + ".png"), letter)
                     consecutive_line_letters.clear()
             else:
                 consecutive_line_letters.append(i)
